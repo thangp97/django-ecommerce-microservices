@@ -36,3 +36,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 BOOK_SERVICE_URL = os.environ.get('BOOK_SERVICE_URL', 'http://book-service:8000')
 ORDER_SERVICE_URL = os.environ.get('ORDER_SERVICE_URL', 'http://order-service:8000')
 COMMENT_RATE_SERVICE_URL = os.environ.get('COMMENT_RATE_SERVICE_URL', 'http://comment-rate-service:8000')
+CLOTHE_SERVICE_URL = os.environ.get('CLOTHE_SERVICE_URL', 'http://clothe-service:8000')
+CUSTOMER_SERVICE_URL = os.environ.get('CUSTOMER_SERVICE_URL', 'http://customer-service:8000')
+
+# AI configuration
+AI_MODEL_DIR = os.environ.get('AI_MODEL_DIR', '/app/ai_models')
+CHROMA_DB_DIR = os.environ.get('CHROMA_DB_DIR', '/app/chroma_db')
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')

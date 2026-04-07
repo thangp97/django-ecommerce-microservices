@@ -8,9 +8,9 @@
     .hero-banner {
         padding: 64px 0 48px;
         background:
-            radial-gradient(circle at 10% 20%, rgba(240, 76, 120, 0.22), transparent 42%),
-            radial-gradient(circle at 90% 80%, rgba(238, 67, 120, 0.28), transparent 48%),
-            linear-gradient(130deg, #fff7f9 0%, #fff1f8 100%);
+            radial-gradient(circle at 10% 20%, rgba(240, 76, 120, 0.2), transparent 42%),
+            radial-gradient(circle at 90% 80%, rgba(238, 67, 120, 0.22), transparent 48%),
+            linear-gradient(130deg, #171628 0%, #241d33 100%);
         border-radius: 0 0 2.75rem 2.75rem;
         margin-bottom: 2.25rem;
     }
@@ -23,7 +23,7 @@
     }
     .book-img-wrapper {
         height: 300px;
-        background: #f1f1f1;
+        background: #211a2e;
         border-radius: 1rem;
         display: flex;
         align-items: center;
@@ -94,7 +94,7 @@
             <div class="col">
                 <div class="book-card p-3 shadow-sm border-0">
                     <a href="/store/clothes/{{ clothe.id }}/" class="text-decoration-none">
-                        <div class="book-img-wrapper" style="background: #f8f9fa; overflow: hidden; position: relative;">
+                        <div class="book-img-wrapper" style="background: #221b30; overflow: hidden; position: relative;">
                             <img src="https://loremflickr.com/400/600/fashion,clothes?lock={{ clothe.id }}" class="img-fluid w-100 h-100" style="object-fit: cover;" alt="{{ clothe.name }}">
                             {% if clothe.stock > 0 %}
                                 <span class="badge-stock bg-success text-white">Còn hàng</span>
@@ -112,7 +112,7 @@
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <span class="price-tag">{{ clothe.price|floatformat:0|intcomma }}<span class="currency">₫</span></span>
                             <div class="book-actions">
-                                <a href="/store/clothes/{{ clothe.id }}/" class="btn btn-sm btn-light rounded-pill px-3">Chi tiết</a>
+                                <a href="/store/clothes/{{ clothe.id }}/" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Chi tiết</a>
                                 {% if clothe.stock > 0 %}
                                 <form action="/store/add-to-cart/" method="POST">
                                     {% csrf_token %}

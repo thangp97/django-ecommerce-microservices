@@ -2,3 +2,14 @@ django
 djangorestframework
 requests
 psycopg2-binary
+
+# Deep Learning
+torch --index-url https://download.pytorch.org/whl/cpu
+numpy
+
+# Vector Database & Embeddings
+chromadb
+sentence-transformers
+
+# LLM (Claude API)
+anthropic

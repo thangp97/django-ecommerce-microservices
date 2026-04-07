@@ -20,6 +20,7 @@ PUBLIC_PATH_PREFIXES = (
     "/store/book/",
     "/health/",
     "/metrics/",
+    "/api/chat/",   # AI chatbot - cho phép truy cập không cần đăng nhập
 )
 
 PROTECTED_PATH_PREFIXES = (

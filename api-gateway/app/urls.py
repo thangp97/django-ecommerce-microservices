@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    ai_chat_proxy,
     home, book_list, customer_list, view_cart,
     admin_order_list, admin_order_detail,
     admin_staff_list, admin_manager_list, admin_catalog_list,
@@ -50,4 +51,5 @@ urlpatterns = [
     path('store/orders/<int:order_id>/pay/', store_payment_simulate, name='store_payment_simulate'),
     path('store/orders/<int:order_id>/confirm/', store_confirm_receipt, name='store_confirm_receipt'),
     path('api/secure-echo/', api_secure_echo, name='api_secure_echo'),
+    path('api/chat/', ai_chat_proxy, name='ai_chat_proxy'),
 ]

@@ -1600,3 +1600,51 @@ def store_clothe_detail(request, clothe_id):
     except Exception:
         pass
     return render(request, "store_clothe_detail.html", {"clothe": clothe, "customer": _get_store_customer(request)})
+
+
+# ============================================================
+#  AI CHATBOT PROXY
+# ============================================================
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json as json_module
+
+@csrf_exempt
+def ai_chat_proxy(request):
+    """
+    Proxy chuyển tiếp request chat từ frontend → recommender-ai-service.
+    Đặt tại api-gateway để tránh CORS và ẩn địa chỉ nội bộ.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    try:
+        body = json_module.loads(request.body)
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    message = body.get("message", "").strip()
+    if not message:
+        return JsonResponse({"error": "Thiếu nội dung tin nhắn"}, status=400)
+
+    # Lấy customer_id từ session nếu đã đăng nhập
+    customer_id = request.session.get("customer_id")
+
+    payload = {
+        "message": message,
+        "history": body.get("history", []),
+    }
+    if customer_id:
+        payload["customer_id"] = customer_id
+
+    try:
+        resp = requests.post(
+            f"{RECOMMENDER_SERVICE_URL}/ai/chat/",
+            json=payload,
+            timeout=30,
+        )
+        return JsonResponse(resp.json(), status=resp.status_code)
+    except requests.Timeout:
+        return JsonResponse({"error": "AI service đang bận, thử lại sau."}, status=503)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

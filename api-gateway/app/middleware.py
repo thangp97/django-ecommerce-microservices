@@ -47,9 +47,12 @@ ROLE_REQUIRED_PREFIXES = {
 
 
 def _is_public_path(path):
+    # PUBLIC được khai báo tường minh thắng PROTECTED (vd: /api/chat/ là public dù /api/ là protected)
+    if any(path.startswith(prefix) for prefix in PUBLIC_PATH_PREFIXES):
+        return True
     if any(path.startswith(prefix) for prefix in PROTECTED_PATH_PREFIXES):
         return False
-    return any(path.startswith(prefix) for prefix in PUBLIC_PATH_PREFIXES)
+    return True
 
 
 def _extract_token(request):

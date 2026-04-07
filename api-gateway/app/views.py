@@ -1643,8 +1643,8 @@ def ai_chat_proxy(request):
             json=payload,
             timeout=30,
         )
-        return JsonResponse(resp.json(), status=resp.status_code)
+        return JsonResponse(resp.json(), status=resp.status_code, json_dumps_params={'ensure_ascii': False})
     except requests.Timeout:
-        return JsonResponse({"error": "AI service đang bận, thử lại sau."}, status=503)
+        return JsonResponse({"error": "AI service đang bận, thử lại sau."}, status=503, json_dumps_params={'ensure_ascii': False})
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=500, json_dumps_params={'ensure_ascii': False})

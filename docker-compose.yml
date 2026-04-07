@@ -276,6 +276,9 @@ services:
       - recommender_chroma:/app/chroma_db
     environment:
       - PYTHONUNBUFFERED=1
+      - PYTHONUTF8=1
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
       - DB_ENGINE=django.db.backends.postgresql
       - DB_NAME=recommender_db
       - DB_USER=bookstore_user

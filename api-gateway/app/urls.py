@@ -14,6 +14,8 @@ from .views import (
     store_payment_simulate, store_confirm_receipt,
     api_secure_echo,
     admin_clothe_list, store_clothes, store_clothe_detail,
+    store_product_list, store_product_detail,
+    product_api_proxy,
 )
 
 urlpatterns = [
@@ -35,13 +37,15 @@ urlpatterns = [
     path('store/', store_home, name='store_home'),
     path('store/clothes/', store_clothes, name='store_clothes'),
     path('store/clothes/<int:clothe_id>/', store_clothe_detail, name='store_clothe_detail'),
+    path('store/products/<str:product_type>/', store_product_list, name='store_product_list'),
+    path('store/products/<str:product_type>/<int:product_id>/', store_product_detail, name='store_product_detail'),
     path('store/login/', store_login, name='store_login'),
     path('store/register/', store_register, name='store_register'),
     path('store/logout/', store_logout, name='store_logout'),
     path('store/profile/', store_profile, name='store_profile'),
     path('store/cart/', store_cart, name='store_cart'),
     path('store/add-to-cart/', store_add_to_cart, name='store_add_to_cart'),
-    path('store/remove-from-cart/<int:book_id>/', store_remove_from_cart, name='store_remove_from_cart'),
+    path('store/remove-from-cart/<str:product_type>/<int:product_id>/', store_remove_from_cart, name='store_remove_from_cart'),
     path('store/book/<int:book_id>/', store_book_detail, name='store_book_detail'),
     path('store/checkout/', store_checkout, name='store_checkout'),
     path('store/orders/', store_orders, name='store_orders'),
@@ -52,4 +56,7 @@ urlpatterns = [
     path('store/orders/<int:order_id>/confirm/', store_confirm_receipt, name='store_confirm_receipt'),
     path('api/secure-echo/', api_secure_echo, name='api_secure_echo'),
     path('api/chat/', ai_chat_proxy, name='ai_chat_proxy'),
+    # Generic product proxy cho 12 product-service (book, clothe, electronic, ...)
+    path('api/products/<str:product_type>/', product_api_proxy, name='product_api_proxy_list'),
+    path('api/products/<str:product_type>/<int:pk>/', product_api_proxy, name='product_api_proxy_detail'),
 ]

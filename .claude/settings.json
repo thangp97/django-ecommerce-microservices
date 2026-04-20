@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python seed_data.py)"
+      "Bash(python seed_data.py)",
+      "Bash(curl -s -X POST http://localhost:8000/api/chat/ -H \"Content-Type: application/json\" -d '{\"message\":\"Classical\"}' -w \"\\\\n\")"
     ]
   }
 }

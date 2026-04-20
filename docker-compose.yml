@@ -113,6 +113,196 @@ services:
       postgres-db:
         condition: service_healthy
 
+  electronic-service:
+    build: ./electronic-service
+    ports:
+      - "8020:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./electronic-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=electronic_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  food-service:
+    build: ./food-service
+    ports:
+      - "8021:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./food-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=food_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  toy-service:
+    build: ./toy-service
+    ports:
+      - "8022:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./toy-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=toy_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  furniture-service:
+    build: ./furniture-service
+    ports:
+      - "8023:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./furniture-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=furniture_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  cosmetic-service:
+    build: ./cosmetic-service
+    ports:
+      - "8024:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./cosmetic-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=cosmetic_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  sport-service:
+    build: ./sport-service
+    ports:
+      - "8025:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./sport-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=sport_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  stationery-service:
+    build: ./stationery-service
+    ports:
+      - "8026:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./stationery-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=stationery_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  appliance-service:
+    build: ./appliance-service
+    ports:
+      - "8027:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./appliance-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=appliance_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  jewelry-service:
+    build: ./jewelry-service
+    ports:
+      - "8028:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./jewelry-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=jewelry_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  pet-supply-service:
+    build: ./pet-supply-service
+    ports:
+      - "8029:8000"
+    command: sh -c "python manage.py makemigrations app && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./pet-supply-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=pet_db
+      - DB_USER=bookstore_user
+      - DB_PASSWORD=bookstore_pass
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
   cart-service:
     build: ./cart-service
     ports:
@@ -315,6 +505,8 @@ services:
       - AUTH_SERVICE_URL=http://auth-service:8000
       - JWT_ISSUER=bookstore-auth-service
       - JWT_AUDIENCE=bookstore-clients
+      - RABBITMQ_HOST=rabbitmq
+      - AI_SERVICE_URL=http://ai-service:8000
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -343,6 +535,59 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin123
     depends_on:
       postgres-db:
+        condition: service_healthy
+
+  neo4j:
+    image: neo4j:5
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/bookstore123
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "8030:8000"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./ai-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=bookstore123
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  ai-ingest-worker:
+    build: ./ai-service
+    command: python app/consumer.py
+    volumes:
+      - ./ai-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=bookstore123
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   rabbitmq:
@@ -446,3 +691,5 @@ volumes:
   postgres_data:
   recommender_models:
   recommender_chroma:
+  neo4j_data:
+  neo4j_logs:

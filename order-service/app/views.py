@@ -5,6 +5,21 @@ from .serializers import OrderSerializer
 from .publisher import publish_order_created
 import requests
 
+PRODUCT_SERVICE_MAP = {
+    "book":       ("http://book-service:8000",       "books"),
+    "clothe":     ("http://clothe-service:8000",     "clothes"),
+    "electronic": ("http://electronic-service:8000", "electronics"),
+    "food":       ("http://food-service:8000",       "foods"),
+    "toy":        ("http://toy-service:8000",        "toys"),
+    "furniture":  ("http://furniture-service:8000",  "furnitures"),
+    "cosmetic":   ("http://cosmetic-service:8000",   "cosmetics"),
+    "sport":      ("http://sport-service:8000",      "sports"),
+    "stationery": ("http://stationery-service:8000", "stationeries"),
+    "appliance":  ("http://appliance-service:8000",  "appliances"),
+    "jewelry":    ("http://jewelry-service:8000",    "jewelries"),
+    "pet-supply": ("http://pet-supply-service:8000", "pet-supplies"),
+}
+
 class OrderListCreate(APIView):
     def get(self, request, customer_id=None):
         if customer_id:
@@ -50,7 +65,8 @@ class OrderListCreate(APIView):
         for item in items:
             OrderItem.objects.create(
                 order=order,
-                book_id=item['book_id'],
+                product_id=item.get('product_id', item.get('book_id')),
+                product_type=item.get('product_type', 'book'),
                 quantity=item['quantity'],
                 price=item['price']
             )
@@ -88,11 +104,13 @@ class OrderDetail(APIView):
             items = OrderItem.objects.filter(order=order)
             for item in items:
                 try:
-                    # Sync rollback via book-service API
-                    book_id = item.book_id
-                    quantity = item.quantity
-                    requests.post(f"http://book-service:8000/books/{book_id}/restore-stock/", 
-                                 json={"quantity": quantity}, timeout=2)
+                    entry = PRODUCT_SERVICE_MAP.get(item.product_type)
+                    if not entry:
+                        print(f"Unknown product_type: {item.product_type}")
+                        continue
+                    base_url, plural = entry
+                    requests.post(f"{base_url}/{plural}/{item.product_id}/restore-stock/",
+                                  json={"quantity": item.quantity}, timeout=2)
                 except Exception as e:
                     print(f"Error restoring stock: {e}")
             

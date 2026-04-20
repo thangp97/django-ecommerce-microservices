@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>{% block title %}Nhà Sách Online - Premium Bookstore{% endblock %}</title>
+    <title>{% block title %}AI E-commerce{% endblock %}</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -299,7 +299,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="/store/">
             <i class="bi bi-intersect fs-3"></i>
-            <span>BOOKSTORE</span>
+            <span>AI E-commerce</span>
         </a>
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#storeNav">
             <span class="navbar-toggler-icon"></span>
@@ -317,8 +317,20 @@
                     <a class="nav-link {% block nav_orders %}{% endblock %}" href="/store/orders/">Đơn hàng</a>
                 </li>
                 {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Khám phá</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Kham pha</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/store/products/electronic/">Dien tu</a></li>
+                        <li><a class="dropdown-item" href="/store/products/food/">Thuc pham</a></li>
+                        <li><a class="dropdown-item" href="/store/products/toy/">Do choi</a></li>
+                        <li><a class="dropdown-item" href="/store/products/furniture/">Noi that</a></li>
+                        <li><a class="dropdown-item" href="/store/products/cosmetic/">My pham</a></li>
+                        <li><a class="dropdown-item" href="/store/products/sport/">The thao</a></li>
+                        <li><a class="dropdown-item" href="/store/products/stationery/">Van phong pham</a></li>
+                        <li><a class="dropdown-item" href="/store/products/appliance/">Gia dung</a></li>
+                        <li><a class="dropdown-item" href="/store/products/jewelry/">Trang suc</a></li>
+                        <li><a class="dropdown-item" href="/store/products/pet-supply/">Do thu cung</a></li>
+                    </ul>
                 </li>
             </ul>
             <div class="d-flex align-items-center gap-3">
@@ -382,9 +394,9 @@
             <div class="col-lg-4">
                 <a class="navbar-brand text-light d-flex align-items-center gap-2 mb-3" href="/store/">
                     <i class="bi bi-intersect fs-3"></i>
-                    <span>BOOKSTORE</span>
+                    <span>AI E-commerce</span>
                 </a>
-                <p class="small opacity-75">Hệ thống nhà sách trực tuyến hiện đại được xây dựng trên kiến trúc Microservices. Mang đến trải nghiệm mua sắm mượt mà và an toàn.</p>
+                <p class="small opacity-75">Nen tang AI E-commerce duoc xay dung tren kien truc Microservices, mang den trai nghiem mua sam da danh muc va an toan.</p>
                 <div class="d-flex gap-3 mt-4">
                     <a href="#" class="fs-5 opacity-50"><i class="bi bi-facebook"></i></a>
                     <a href="#" class="fs-5 opacity-50"><i class="bi bi-instagram"></i></a>
@@ -427,7 +439,7 @@
         <hr class="opacity-10 my-4">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <p class="small mb-0 opacity-50">© 2026 Bookstore Microservice. All rights reserved.</p>
+                <p class="small mb-0 opacity-50">© 2026 AI E-commerce Microservice. All rights reserved.</p>
             </div>
             <div class="col-md-6 text-md-end">
                 <p class="small mb-0 opacity-50">Designed for Industry-Level Microservices Course.</p>
@@ -703,7 +715,7 @@
     <div id="chat-header">
         <div class="chat-avatar"><i class="bi bi-robot"></i></div>
         <div class="chat-header-info">
-            <div class="name">AI Tư vấn Bookstore</div>
+            <div class="name">AI Tu van AI E-commerce</div>
             <div class="status">● Đang trực tuyến</div>
         </div>
         <button id="chat-close"><i class="bi bi-x-lg"></i></button>
@@ -714,7 +726,7 @@
         <!-- Tin nhắn chào mừng -->
         <div class="msg-ai-wrap">
             <div class="msg-bubble msg-ai">
-                👋 Xin chào! Tôi là AI tư vấn của Bookstore.<br><br>
+                👋 Xin chao! Toi la AI tu van cua AI E-commerce.<br><br>
                 Tôi có thể giúp bạn:<br>
                 • Tìm sách / quần áo phù hợp<br>
                 • Giải đáp chính sách mua hàng<br>
@@ -860,6 +872,26 @@
             const answer = data.answer || data.error || 'Không có phản hồi từ AI.';
 
             appendMessage(answer, 'ai');
+            // Render recommended products từ GraphRAG (nếu có)
+            const recs = data.recommended_products || [];
+            if (recs.length) {
+                const ul = document.createElement('div');
+                ul.style.cssText = 'margin:6px 0 10px 40px;font-size:0.85rem;';
+                ul.innerHTML = recs.slice(0,5).map(p => {
+                    const link = p.product_type === 'book'
+                        ? `/store/book/${p.product_id}/`
+                        : p.product_type === 'clothe'
+                        ? `/store/clothes/${p.product_id}/`
+                        : `/store/products/${p.product_type}/${p.product_id}/`;
+                    const price = p.price ? Math.round(p.price).toLocaleString('vi-VN') + 'đ' : '';
+                    return `<div style="padding:4px 8px;margin:2px 0;background:rgba(99,102,241,0.1);border-radius:6px;">
+                        <a href="${link}" style="color:#818cf8;text-decoration:none;">${p.name}</a>
+                        <span style="color:#94a3b8;"> · ${p.product_type} · ${price}</span>
+                    </div>`;
+                }).join('');
+                msgs.appendChild(ul);
+                msgs.scrollTop = msgs.scrollHeight;
+            }
             history.push({ role: 'assistant', content: answer });
 
             // Giới hạn lịch sử 20 tin nhắn

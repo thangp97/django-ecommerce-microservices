@@ -1,0 +1,85 @@
+{% extends 'store_base.html' %}
+{% block title %}{{ product.name|default:product.title }} - AI E-commerce{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/store/">Trang chu</a></li>
+      <li class="breadcrumb-item"><a href="/store/products/{{ product_type }}/">{{ product_label }}</a></li>
+      <li class="breadcrumb-item active">{{ product.name|default:product.title }}</li>
+    </ol>
+  </nav>
+
+  {% if product %}
+  <div class="row g-5">
+    <div class="col-md-5">
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <img src="https://loremflickr.com/600/800/{{ product_type }}?lock={{ product.id }}" class="img-fluid" alt="{{ product.name|default:product.title }}">
+      </div>
+    </div>
+    <div class="col-md-7">
+      <h1 class="fw-bold display-5 mb-2">{{ product.name|default:product.title }}</h1>
+      {% if subtitle_value %}
+      <p class="fs-5 text-muted mb-4">{{ subtitle_value }}</p>
+      {% endif %}
+
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <span class="display-6 fw-bold text-danger">{{ product.price }} ₫</span>
+        {% if product.stock > 0 %}
+        <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">
+          <i class="bi bi-check-circle-fill me-1"></i>Con {{ product.stock }} san pham
+        </span>
+        {% else %}
+        <span class="badge bg-secondary-subtle text-secondary border border-secondary px-3 py-2 rounded-pill">Het hang</span>
+        {% endif %}
+      </div>
+
+      <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+        <h5 class="fw-bold mb-3">Thong tin san pham</h5>
+        <div class="small text-secondary">
+          <div><strong>Loai:</strong> {{ product_label }}</div>
+          {% if product.brand %}<div><strong>Thuong hieu:</strong> {{ product.brand }}</div>{% endif %}
+          {% if product.material %}<div><strong>Chat lieu:</strong> {{ product.material }}</div>{% endif %}
+          {% if product.category %}<div><strong>Danh muc:</strong> {{ product.category }}</div>{% endif %}
+        </div>
+      </div>
+
+      {% if product.stock > 0 %}
+      <div class="d-grid gap-2">
+        {% if customer %}
+        <form method="post" action="/store/add-to-cart/" class="row g-3">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <input type="hidden" name="product_type" value="{{ product_type }}">
+          <input type="hidden" name="next" value="/store/products/{{ product_type }}/{{ product.id }}/">
+          <div class="col-auto">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">So luong</span>
+              <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control border-start-0 text-center" style="width:80px;">
+            </div>
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+              <i class="bi bi-cart-plus-fill me-2"></i>Them vao gio hang
+            </button>
+          </div>
+        </form>
+        {% else %}
+        <a href="/store/login/" class="btn btn-outline-primary btn-lg fw-bold">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Dang nhap de mua hang
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <h2 class="text-muted">Khong tim thay thong tin san pham</h2>
+    <a href="/store/products/{{ product_type }}/" class="btn btn-primary mt-3">Quay lai danh sach</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

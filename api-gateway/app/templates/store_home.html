@@ -1,7 +1,7 @@
 {% extends "store_base.html" %}
 {% load humanize %}
 
-{% block title %}Chào mừng đến với Premium Bookstore{% endblock %}
+{% block title %}Chao mung den voi AI E-commerce{% endblock %}
 {% block nav_home %}active{% endblock %}
 
 {% block extra_css %}
@@ -128,7 +128,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3 small">BOOKSTORE 2026</span>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3 small">AI E-COMMERCE 2026</span>
                 <h1 class="hero-title">Mua sách đúng nhu cầu, tìm sách trong vài giây.</h1>
                 <p class="lead text-muted mb-4">Tìm theo tên, tác giả, giá, tồn kho. Bạn có thể chốt đơn nhanh ngay trên danh sách với trải nghiệm tối ưu cho mobile.</p>
                 <div class="hero-kpis">
@@ -206,6 +206,38 @@
 </section>
 
 <div class="container" id="books">
+    <div class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            {% for p in product_types %}
+            <a href="{{ p.url }}" class="btn btn-sm btn-outline-secondary rounded-pill">{{ p.label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% if graph_recommendations %}
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="section-title mb-0"><i class="bi bi-diagram-3 text-info me-2"></i>Gợi ý từ GraphRAG</h2>
+                <p class="text-muted small mb-0">Dựa trên hành vi của bạn và những khách hàng tương tự trên Neo4j</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            {% for r in graph_recommendations %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="badge bg-info text-dark mb-2">{{ r.product_type }}</div>
+                        <div class="fw-bold small lh-sm">{{ r.name }}</div>
+                        <div class="text-danger fw-bold small mt-2">{{ r.price|floatformat:0 }}đ</div>
+                        <div class="text-muted" style="font-size:0.7rem;">score: {{ r.score }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Recommendations Section -->
     {% if recommendations %}
     <div class="mb-5">

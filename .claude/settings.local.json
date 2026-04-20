@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash scripts/generate_services.sh)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(r'c:\\\\Users\\\\Admin\\\\Desktop\\\\KTVTKPM\\\\django-ecommerce-microservices\\\\api-gateway\\\\app\\\\views.py', encoding='utf-8'\\).read\\(\\)\\)\")",
+      "Bash(docker-compose exec:*)"
+    ]
+  }
+}

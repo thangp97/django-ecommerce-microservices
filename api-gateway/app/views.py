@@ -321,117 +321,109 @@ def view_cart(request, customer_id):
 # ── STOREFRONT VIEWS ─────────────────────────────────────────
 
 def store_home(request):
-    books = []
+    customer = _get_store_customer(request)
     recommendations = []
+    ai_search_answer = ""
+    ai_search_recommendations = []
     q = request.GET.get("q", "").strip()
-    # Behavior event: search
+
     if q:
-        customer = _get_store_customer(request)
         if customer:
             publish_event('search', customer['id'], query=q, routing_key='search')
-    author = request.GET.get("author", "").strip()
-    stock = request.GET.get("stock", "all").strip()
-    sort = request.GET.get("sort", "featured").strip()
-    min_price_raw = request.GET.get("min_price", "").strip()
-    max_price_raw = request.GET.get("max_price", "").strip()
-    page_raw = request.GET.get("page", "1").strip()
 
-    min_price = None
-    max_price = None
-    try:
-        if min_price_raw:
-            min_price = float(min_price_raw)
-    except ValueError:
-        min_price = None
-    try:
-        if max_price_raw:
-            max_price = float(max_price_raw)
-    except ValueError:
-        max_price = None
-
-    try:
-        page = max(1, int(page_raw))
-    except ValueError:
-        page = 1
-
-    try:
-        r = requests.get(f"{BOOK_SERVICE_URL}/books/", timeout=3)
-        books = r.json()
-        if not isinstance(books, list):
-            books = []
-    except Exception:
-        pass
-
-    all_authors = sorted({str(b.get("author", "")).strip() for b in books if b.get("author")})
-
-    filtered_books = []
-    q_lower = q.lower()
-    author_lower = author.lower()
-    for book in books:
-        title = str(book.get("title", ""))
-        writer = str(book.get("author", ""))
-        stock_value = int(book.get("stock", 0) or 0)
+    # AI search suggestions from ai-service when customer clicks Search.
+    if q:
+        ai_url = os.environ.get('AI_SERVICE_URL', 'http://ai-service:8000')
+        ai_payload = {"message": q}
+        if customer:
+            ai_payload["user_id"] = customer["id"]
         try:
-            price_value = float(book.get("price", 0) or 0)
-        except (TypeError, ValueError):
-            price_value = 0.0
+            r_ai = requests.post(f"{ai_url}/chat/", json=ai_payload, timeout=8)
+            if r_ai.status_code == 200:
+                ai_data = r_ai.json()
+                ai_search_answer = ai_data.get("answer", "") or ""
+                ai_recs = ai_data.get("recommended_products", [])
+                if isinstance(ai_recs, list):
+                    for rec in ai_recs:
+                        ptype = rec.get("product_type")
+                        pid = rec.get("product_id")
+                        if ptype in PRODUCT_SERVICE_MAP and pid is not None:
+                            rec["detail_url"] = _build_store_product_detail_url(ptype, pid)
+                            rec["product_label"] = _get_product_label(ptype)
+                            ai_search_recommendations.append(rec)
+        except Exception:
+            pass
 
-        if q_lower and q_lower not in title.lower() and q_lower not in writer.lower():
-            continue
-        if author_lower and author_lower != writer.lower():
-            continue
-        if stock == "in_stock" and stock_value <= 0:
-            continue
-        if stock == "out_of_stock" and stock_value > 0:
-            continue
-        if min_price is not None and price_value < min_price:
-            continue
-        if max_price is not None and price_value > max_price:
-            continue
-        filtered_books.append(book)
+    # Multi-category products from all product services.
+    all_products = []
+    total_products_all = 0
+    in_stock_products_all = 0
+    for ptype, (base_url, plural) in PRODUCT_SERVICE_MAP.items():
+        try:
+            rp = requests.get(f"{base_url}/{plural}/", timeout=3)
+            items = rp.json() if rp.status_code == 200 else []
+        except Exception:
+            items = []
+        if not isinstance(items, list):
+            items = []
 
-    if sort == "price_asc":
-        filtered_books.sort(key=lambda x: float(x.get("price", 0) or 0))
-    elif sort == "price_desc":
-        filtered_books.sort(key=lambda x: float(x.get("price", 0) or 0), reverse=True)
-    elif sort == "title_asc":
-        filtered_books.sort(key=lambda x: str(x.get("title", "")).lower())
-    elif sort == "title_desc":
-        filtered_books.sort(key=lambda x: str(x.get("title", "")).lower(), reverse=True)
-    elif sort == "newest":
-        filtered_books.sort(key=lambda x: int(x.get("id", 0) or 0), reverse=True)
-    else:
-        # Featured: in-stock first, then high stock, then newest.
-        filtered_books.sort(
-            key=lambda x: (
-                int((x.get("stock", 0) or 0) <= 0),
-                -int(x.get("stock", 0) or 0),
-                -int(x.get("id", 0) or 0),
+        normalized = []
+        for item in items:
+            pid = item.get("id")
+            if pid is None:
+                continue
+            title = item.get("title") or item.get("name") or f"{_get_product_label(ptype)} #{pid}"
+            subtitle = (
+                item.get("author")
+                or item.get("brand")
+                or item.get("material")
+                or item.get("category")
+                or ""
             )
+            try:
+                price = float(item.get("price", 0) or 0)
+            except (TypeError, ValueError):
+                price = 0.0
+            stock_value = int(item.get("stock", 0) or 0)
+            normalized_item = {
+                "id": pid,
+                "name": title,
+                "subtitle": subtitle,
+                "price": price,
+                "stock": stock_value,
+                "product_type": ptype,
+                "product_label": _get_product_label(ptype),
+                "detail_url": _build_store_product_detail_url(ptype, pid),
+            }
+            normalized.append(normalized_item)
+            all_products.append(normalized_item)
+
+        total_products_all += len(normalized)
+        in_stock_products_all += sum(1 for p in normalized if p["stock"] > 0)
+
+    q_lower = q.lower()
+    searched_products = []
+    for product in all_products:
+        haystack = " ".join([
+            str(product.get("name", "")),
+            str(product.get("subtitle", "")),
+            str(product.get("product_label", "")),
+            str(product.get("product_type", "")),
+        ]).lower()
+        if not q_lower or q_lower in haystack:
+            searched_products.append(product)
+
+    searched_products.sort(
+        key=lambda x: (
+            x["stock"] <= 0,
+            x["product_label"],
+            -int(x["id"] or 0),
         )
+    )
 
-    page_size = 12
-    total_results = len(filtered_books)
-    total_pages = max(1, ceil(total_results / page_size))
-    if page > total_pages:
-        page = total_pages
+    total_results = len(searched_products)
+    displayed_products = searched_products[:24]
 
-    start = (page - 1) * page_size
-    end = start + page_size
-    paginated_books = filtered_books[start:end]
-
-    base_filters = request.GET.copy()
-    if "page" in base_filters:
-        del base_filters["page"]
-    query_without_page = base_filters.urlencode()
-
-    page_numbers = [
-        n for n in range(max(1, page - 2), min(total_pages, page + 2) + 1)
-    ]
-
-    current_querystring = request.get_full_path()
-
-    customer = _get_store_customer(request)
     graph_recommendations = []
     if customer:
         # Legacy recommender (giữ tương thích với store_home cũ)
@@ -451,31 +443,19 @@ def store_home(request):
         except Exception:
             pass
     return render(request, "store_home.html", {
-        "books": paginated_books,
         "customer": customer,
         "recommendations": recommendations,
         "graph_recommendations": graph_recommendations,
-        "authors": all_authors,
-        "total_books": len(books),
+        "ai_search_answer": ai_search_answer,
+        "ai_search_recommendations": ai_search_recommendations,
+        "all_products_preview": all_products[:12],
+        "displayed_products": displayed_products,
+        "total_products_all": total_products_all,
+        "in_stock_products_all": in_stock_products_all,
         "total_results": total_results,
-        "in_stock_count": sum(1 for b in books if int(b.get("stock", 0) or 0) > 0),
         "filters": {
             "q": q,
-            "author": author,
-            "stock": stock,
-            "sort": sort,
-            "min_price": min_price_raw,
-            "max_price": max_price_raw,
         },
-        "page": page,
-        "total_pages": total_pages,
-        "has_prev": page > 1,
-        "has_next": page < total_pages,
-        "prev_page": page - 1,
-        "next_page": page + 1,
-        "page_numbers": page_numbers,
-        "query_without_page": query_without_page,
-        "current_querystring": current_querystring,
         "product_types": [
             {
                 "key": ptype,

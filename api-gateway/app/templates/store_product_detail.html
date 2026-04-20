@@ -1,5 +1,5 @@
 {% extends 'store_base.html' %}
-{% block title %}{{ product.name|default:product.title }} - AI E-commerce{% endblock %}
+{% block title %}{% firstof product.name product.title %} - AI E-commerce{% endblock %}
 {% block content %}
 
 <div class="container py-5">
@@ -7,7 +7,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/store/">Trang chu</a></li>
       <li class="breadcrumb-item"><a href="/store/products/{{ product_type }}/">{{ product_label }}</a></li>
-      <li class="breadcrumb-item active">{{ product.name|default:product.title }}</li>
+      <li class="breadcrumb-item active">{% firstof product.name product.title %}</li>
     </ol>
   </nav>
 
@@ -15,11 +15,11 @@
   <div class="row g-5">
     <div class="col-md-5">
       <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-        <img src="https://loremflickr.com/600/800/{{ product_type }}?lock={{ product.id }}" class="img-fluid" alt="{{ product.name|default:product.title }}">
+        <img src="https://loremflickr.com/600/800/{{ product_type }}?lock={{ product.id }}" class="img-fluid" alt="{% firstof product.name product.title %}">
       </div>
     </div>
     <div class="col-md-7">
-      <h1 class="fw-bold display-5 mb-2">{{ product.name|default:product.title }}</h1>
+      <h1 class="fw-bold display-5 mb-2">{% firstof product.name product.title %}</h1>
       {% if subtitle_value %}
       <p class="fs-5 text-muted mb-4">{{ subtitle_value }}</p>
       {% endif %}

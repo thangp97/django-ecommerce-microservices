@@ -27,7 +27,7 @@
       <div class="book-card p-3 shadow-sm border-0 h-100">
         <a href="{{ p.detail_url }}" class="text-decoration-none">
           <div class="book-img-wrapper" style="background:#1b2940;overflow:hidden;position:relative;">
-            <img src="https://loremflickr.com/400/600/{{ product_type }}?lock={{ p.id }}" class="img-fluid w-100 h-100" style="object-fit:cover;" alt="{{ p.name|default:p.title }}">
+            <img src="https://loremflickr.com/400/600/{{ product_type }}?lock={{ p.id }}" class="img-fluid w-100 h-100" style="object-fit:cover;" alt="{% firstof p.name p.title %}">
             {% if p.stock > 0 %}
             <span class="badge-stock bg-success text-white">Con hang</span>
             {% else %}
@@ -37,9 +37,9 @@
         </a>
         <div class="card-body p-0">
           <a href="{{ p.detail_url }}" class="text-decoration-none text-dark">
-            <h6 class="fw-bold text-truncate mb-1" title="{{ p.name|default:p.title }}">{{ p.name|default:p.title }}</h6>
+            <h6 class="fw-bold text-truncate mb-1" title="{% firstof p.name p.title %}">{% firstof p.name p.title %}</h6>
           </a>
-          <p class="text-muted small mb-2 text-truncate">{{ p.brand|default:p.material|default:p.category|default:"" }}</p>
+          <p class="text-muted small mb-2 text-truncate">{% firstof p.brand p.material p.category "" %}</p>
           <div class="small text-muted mb-2">Ton kho: {{ p.stock|default:0 }}</div>
           <div class="d-flex justify-content-between align-items-center mt-3">
             <span class="price-tag">{{ p.price|floatformat:0|intcomma }}<span class="currency">₫</span></span>

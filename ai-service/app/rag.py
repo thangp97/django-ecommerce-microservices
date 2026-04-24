@@ -5,8 +5,6 @@ Bước 2: retrieve hybrid:
     - Vector/keyword search qua product name (TF-IDF đơn giản on-the-fly trên Neo4j).
     - Graph traversal: lịch sử user + similar users' purchases.
 Bước 3: build context từ top-K.
-Bước 4: generate answer — dùng Claude API nếu có ANTHROPIC_API_KEY, nếu không
-         trả template Vietnamese.
 """
 import os
 import re
